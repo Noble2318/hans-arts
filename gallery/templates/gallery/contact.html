@@ -1,0 +1,26 @@
+﻿{% extends 'gallery/base.html' %}
+{% block title %}Contact - Hans Arts{% endblock %}
+
+{% block content %}
+<section class="section">
+    <h2 class="section-title">Wasiliana Nasi</h2>
+    <div class="detail-layout">
+        <div class="detail-info">
+            <form method="post" style="max-width:480px;">
+                {% csrf_token %}
+                <div class="form-field">{{ form.name }}</div>
+                <div class="form-field">{{ form.email }}</div>
+                <div class="form-field">{{ form.phone }}</div>
+                <div class="form-field">{{ form.message }}</div>
+                <button type="submit" class="btn">Tuma Ujumbe</button>
+            </form>
+        </div>
+        <div class="detail-info">
+            {% if artist %}
+            <p><strong>Simu/WhatsApp:</strong> {{ artist.whatsapp_number }}</p>
+            {% if artist.email %}<p><strong>Email:</strong> {{ artist.email }}</p>{% endif %}
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

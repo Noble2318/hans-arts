@@ -1,0 +1,43 @@
+﻿{% extends 'gallery/base.html' %}
+{% block title %}{{ painting.title }} - Hans Arts{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="detail-layout">
+        <div>
+            <img src="{{ painting.image.url }}" alt="{{ painting.title }}">
+            {% if painting.video %}
+            <video controls style="width:100%; margin-top:16px; border-radius:4px;">
+                <source src="{{ painting.video.url }}" type="video/mp4">
+            </video>
+            {% endif %}
+        </div>
+        <div class="detail-info">
+            <h1>{{ painting.title }}</h1>
+            <div class="meta">
+                {% if painting.medium %}<span>Medium: {{ painting.medium }}</span>{% endif %}
+                {% if painting.size %}<span>Size: {{ painting.size }}</span>{% endif %}
+                <span>Category: {{ painting.get_category_display }}</span>
+                <span>{% if painting.is_available %}Inapatikana{% else %}Imeuzwa{% endif %}</span>
+            </div>
+
+            {% if painting.price %}
+            <div class="price">TZS {{ painting.price|floatformat:0 }}</div>
+            {% endif %}
+
+            <p>{{ painting.description }}</p>
+
+            <h3 style="margin-top:32px; margin-bottom:16px; font-size:1.1rem;">Wasiliana kuhusu painting hii</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-field">{{ form.name }}</div>
+                <div class="form-field">{{ form.email }}</div>
+                <div class="form-field">{{ form.phone }}</div>
+                <div class="form-field">{{ form.message }}</div>
+                <button type="submit" class="btn">Tuma Ujumbe</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

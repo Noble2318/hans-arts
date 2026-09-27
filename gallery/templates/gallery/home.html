@@ -1,0 +1,47 @@
+{% extends 'gallery/base.html' %} {% block title %}Hans Arts — Traditional
+African Art{% endblock %} {% block content %}
+
+<section class="hero">
+  {% if featured.0 %}
+  <img src="{{ featured.0.image.url }}" alt="{{ featured.0.title }}" />
+  {% endif %}
+
+  <div class="hero-overlay">
+    <h1>{{ artist.name|default:"Hans Arts" }}</h1>
+
+    <p>
+      Authentic African art inspired by wildlife, culture, heritage, and
+      generations of stories.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Featured Artwork</h2>
+
+  <div class="gallery-grid">
+    {% for painting in featured %}
+
+    <a href="{% url 'painting_detail' painting.pk %}" class="painting-card">
+      <img src="{{ painting.image.url }}" alt="{{ painting.title }}" />
+
+      <div class="info">
+        <h3>{{ painting.title }}</h3>
+
+        <span>{{ painting.get_category_display }}</span>
+      </div>
+    </a>
+
+    {% empty %}
+
+    <p>No artwork has been added yet.</p>
+
+    {% endfor %}
+  </div>
+
+  <div style="margin-top: 32px">
+    <a href="{% url 'gallery_list' %}" class="btn"> View All Artwork </a>
+  </div>
+</section>
+
+{% endblock %} ```
