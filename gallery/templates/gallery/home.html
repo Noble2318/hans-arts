@@ -33,8 +33,7 @@ African Art{% endblock %} {% block content %}
   <h2 class="section-title">
     {{ t.meet_the_artist|default:"Meet the artist" }}
   </h2>
-  {# Keep each {{ ... }} on ONE line: Django does not read a variable tag split
-  across lines. #} {% if artist.bio %}
+  {% if artist.bio %}
   <p>{{ artist.bio|truncatewords:60 }}</p>
   {% else %}
   <p>{{ t.artist_intro }}</p>

@@ -64,7 +64,7 @@ class PublicPageTests(TestCase):
 		self.assertContains(response, 'Amina Artist')
 		self.assertContains(response, 'Explore the gallery')
 		self.assertContains(response, 'Meet the artist')
-		self.assertNotContains(response, '{# Keep each')
+		self.assertNotContains(response, 'Django does not read a variable tag split')
 		self.assertContains(response, 'https://wa.me/255700123456')
 		self.assertEqual(response.content.decode().count('class="whatsapp-float"'), 1)
 		self.assertEqual(response.content.decode().count('Featured painting'), 1)
