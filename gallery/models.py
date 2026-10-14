@@ -69,6 +69,8 @@ class ArtistProfile(models.Model):
         max_length=20, help_text="Mfano: 255712345678 (bila + au 0 mwanzoni)"
     )
     instagram_url = models.URLField(blank=True)
+    tiktok_url = models.URLField(blank=True)
+    x_url = models.URLField(blank=True)
     email = models.EmailField(blank=True)
 
     # NEW: extra About page content

@@ -115,15 +115,53 @@
 
     <footer class="site-footer">
       <span>&copy; {% now "Y" %} Hanslim Art.</span>
-      {% if artist %}
-      <span
-        >{% if artist.instagram_url %}<a
+      {% if artist and artist.instagram_url or artist and artist.tiktok_url or artist and artist.x_url %}
+      <nav class="social-links" aria-label="Social media">
+        {% if artist.instagram_url %}
+        <a
+          class="social-link"
           href="{{ artist.instagram_url }}"
           target="_blank"
           rel="noopener noreferrer"
-          >Instagram</a
-        >{% endif %}</span
-      >
+          aria-label="Instagram"
+          title="Instagram"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="18" cy="6" r="1.2" fill="currentColor"/>
+          </svg>
+        </a>
+        {% endif %}
+        {% if artist.tiktok_url %}
+        <a
+          class="social-link"
+          href="{{ artist.tiktok_url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="TikTok"
+          title="TikTok"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19.6 8.2a7.2 7.2 0 0 1-4.5-1.6v8.1a6.1 6.1 0 1 1-6.1-6.1c.4 0 .8 0 1.2.1v3.4a2.8 2.8 0 1 0 1.6 2.6V2.5h3.4c.2 2.4 2.1 4.3 4.5 4.5v3.4Z" fill="currentColor"/>
+          </svg>
+        </a>
+        {% endif %}
+        {% if artist.x_url %}
+        <a
+          class="social-link"
+          href="{{ artist.x_url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="X"
+          title="X"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.6 22H2.4l7.3-8.4L1.9 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L7.4 3.9H5.6L17.8 20Z" fill="currentColor"/>
+          </svg>
+        </a>
+        {% endif %}
+      </nav>
       {% endif %}
     </footer>
 

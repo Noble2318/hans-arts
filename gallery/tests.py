@@ -73,6 +73,42 @@ class PublicPageTests(TestCase):
 			f'href="{reverse("painting_detail", args=[painting.pk])}"',
 		)
 
+	def test_contact_page_shows_branding_and_whatsapp_action(self):
+		ArtistProfile.objects.create(
+			name='Amina Artist',
+			whatsapp_number='0700123456',
+		)
+
+		response = self.client.get(reverse('contact'))
+
+		self.assertContains(response, 'class="contact-brand-lockup"')
+		self.assertContains(response, 'alt=""')
+		self.assertContains(response, 'class="btn contact-whatsapp"')
+		self.assertContains(response, 'https://wa.me/255700123456')
+		self.assertContains(response, 'class="whatsapp-float"')
+
+	def test_footer_shows_configured_social_media_icons(self):
+		ArtistProfile.objects.create(
+			name='Amina Artist',
+			whatsapp_number='0700123456',
+			instagram_url='https://www.instagram.com/hanslimart/',
+			tiktok_url='https://www.tiktok.com/@hanslimart',
+			x_url='https://x.com/hanslimart',
+		)
+
+		response = self.client.get(reverse('home'))
+
+		self.assertContains(response, '<nav class="social-links" aria-label="Social media">')
+		for label, url in (
+			('Instagram', 'https://www.instagram.com/hanslimart/'),
+			('TikTok', 'https://www.tiktok.com/@hanslimart'),
+			('X', 'https://x.com/hanslimart'),
+		):
+			with self.subTest(platform=label):
+				self.assertContains(response, f'aria-label="{label}"')
+				self.assertContains(response, f'href="{url}"')
+		self.assertEqual(response.content.decode().count('class="social-link"'), 3)
+
 	def test_about_page_shows_artist_story_details(self):
 		ArtistProfile.objects.create(
 			name='Amina Artist',

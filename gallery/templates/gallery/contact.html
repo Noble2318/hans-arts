@@ -1,4 +1,5 @@
 ﻿{% extends 'gallery/base.html' %}
+{% load static %}
 {% block title %}{{ t.contact_us }} - Hanslim Art{% endblock %}
 
 {% block content %}
@@ -29,8 +30,28 @@
             </form>
         </div>
         <div class="detail-info">
+            <div class="contact-brand-lockup" role="img" aria-label="Hanslim Art">
+                <img
+                    src="{% static 'gallery/images/hanslim-art-mark.svg' %}"
+                    alt=""
+                    width="56"
+                    height="56"
+                />
+                <span class="site-title__wordmark" aria-hidden="true">
+                    <span class="site-title__name">Hanslim</span>
+                    <span class="site-title__art">Art</span>
+                </span>
+            </div>
             {% if artist %}
             <p><strong>{{ t.whatsapp_contact }}:</strong> {{ artist.whatsapp_number }}</p>
+            {% if artist.whatsapp_number %}
+            <a
+                class="btn contact-whatsapp"
+                href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
+                target="_blank"
+                rel="noopener noreferrer"
+            >{{ t.whatsapp_contact }}</a>
+            {% endif %}
             {% if artist.email %}<p><strong>Email:</strong> {{ artist.email }}</p>{% endif %}
             {% endif %}
         </div>
