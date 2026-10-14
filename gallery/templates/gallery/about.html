@@ -1,19 +1,69 @@
-﻿{% extends 'gallery/base.html' %}
-{% block title %}About - Hans Arts{% endblock %}
-
-{% block content %}
+﻿{% extends 'gallery/base.html' %} {% block title %}{{ t.about_artist }} - Hanslim
+Art{% endblock %} {% block content %}
 <section class="section">
-    <h2 class="section-title">Kuhusu Msanii</h2>
-    <div class="detail-layout">
-        <div>
-            {% if artist.photo %}
-            <img src="{{ artist.photo.url }}" alt="{{ artist.name }}">
-            {% endif %}
-        </div>
-        <div class="detail-info">
-            <h1>{{ artist.name|default:"Msanii" }}</h1>
-            <p>{{ artist.bio|linebreaks }}</p>
-        </div>
+  <h2 class="section-title">{{ t.about_artist }}</h2>
+
+  <div
+    class="detail-layout about-layout{% if not artist.photo %} no-photo{% endif %}"
+  >
+    {% if artist.photo %}
+    <div class="about-portrait">
+      <img src="{{ artist.photo.url }}" alt="{{ artist.name }}" />
     </div>
+    {% endif %}
+
+    <div class="detail-info about-story">
+      <h1>{{ artist.name|default:"Artist" }}</h1>
+      {% if artist.tagline %}
+      <p class="about-tagline">{{ artist.tagline }}</p>
+      {% endif %} {% if artist.bio %}
+      <div class="about-bio">{{ artist.bio|linebreaks }}</div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% if artist.materials or artist.inspiration %}
+<section class="section about-details">
+  <div class="about-cards">
+    {% if artist.materials %}
+    <article class="about-card">
+      <h3>{{ t.about_materials|default:"Materials &amp; technique" }}</h3>
+      <div>{{ artist.materials|linebreaks }}</div>
+    </article>
+    {% endif %} {% if artist.inspiration %}
+    <article class="about-card">
+      <h3>{{ t.about_inspiration|default:"Inspiration" }}</h3>
+      <div>{{ artist.inspiration|linebreaks }}</div>
+    </article>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<section class="section about-cta">
+  <h2 class="section-title">
+    {{ t.about_cta_title|default:"Interested in a painting?" }}
+  </h2>
+  <p>{{ t.about_cta_text }}</p>
+  <div class="hero-actions">
+    <a href="{% url 'gallery_list' %}" class="btn">
+      {{ t.explore_gallery|default:"Explore the gallery" }}
+    </a>
+    {% if artist.whatsapp_number %}
+    <a
+      href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
+      class="btn btn-outline"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {{ t.contact_artist|default:"Contact the artist" }}
+    </a>
+    {% else %}
+    <a href="{% url 'contact' %}" class="btn btn-outline">
+      {{ t.contact_artist|default:"Contact the artist" }}
+    </a>
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

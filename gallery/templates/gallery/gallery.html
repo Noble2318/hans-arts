@@ -1,29 +1,90 @@
-﻿{% extends 'gallery/base.html' %}
-{% block title %}Gallery - Hans Arts{% endblock %}
-
-{% block content %}
+{% extends 'gallery/base.html' %} {% block title %}{{ t.gallery_title }} - Hanslim
+Art{% endblock %} {% block content %}
 <section class="section">
-    <h2 class="section-title">Gallery</h2>
+  <h2 class="section-title">{{ t.gallery_title }}</h2>
 
-    <div class="filter-bar">
-        <a href="?category=all">Zote</a>
-        {% for value, label in categories %}
-        <a href="?category={{ value }}">{{ label }}</a>
-        {% endfor %}
+  <form method="get" class="gallery-filters">
+    <div class="gallery-search">
+      <label class="visually-hidden" for="{{ filter_form.q.id_for_label }}">
+        {{ filter_form.q.label }}
+      </label>
+      {{ filter_form.q }}
+      <button type="submit" class="btn">{{ t.search_button }}</button>
     </div>
 
-    <div class="gallery-grid">
-        {% for painting in paintings %}
-        <a href="{% url 'painting_detail' painting.pk %}" class="painting-card">
-            <img src="{{ painting.image.url }}" alt="{{ painting.title }}">
-            <div class="info">
-                <h3>{{ painting.title }}</h3>
-                <span>{{ painting.get_category_display }}</span>
-            </div>
-        </a>
-        {% empty %}
-        <p>Hakuna kazi katika kategoria hii.</p>
-        {% endfor %}
+    <div class="filter-fields">
+      <div class="filter-field">
+        <label for="{{ filter_form.category.id_for_label }}">{{ filter_form.category.label }}</label>
+        {{ filter_form.category }}
+      </div>
+      <div class="filter-field">
+        <label for="{{ filter_form.availability.id_for_label }}">{{ filter_form.availability.label }}</label>
+        {{ filter_form.availability }}
+      </div>
+      <div class="filter-field">
+        <label for="{{ filter_form.currency.id_for_label }}">{{ filter_form.currency.label }}</label>
+        {{ filter_form.currency }}
+      </div>
+      <div class="filter-field">
+        <label for="{{ filter_form.min_price.id_for_label }}">{{ filter_form.min_price.label }}</label>
+        {{ filter_form.min_price }}
+      </div>
+      <div class="filter-field">
+        <label for="{{ filter_form.max_price.id_for_label }}">{{ filter_form.max_price.label }}</label>
+        {{ filter_form.max_price }}
+      </div>
+      <div class="filter-actions">
+        <button type="submit" class="btn">{{ t.filter_apply }}</button>
+        <a href="{% url 'gallery_list' %}" class="filter-clear">{{ t.filter_clear }}</a>
+      </div>
     </div>
+
+    {% if filter_form.errors %}
+    <div class="filter-errors" role="alert">
+      {{ filter_form.non_field_errors }}
+      {% for field in filter_form %}
+        {% if field.errors %}
+        <p>{{ field.label }}: {{ field.errors|join:", " }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </form>
+
+  <div class="gallery-grid">
+    {% for painting in paintings %}
+    <a href="{% url 'painting_detail' painting.pk %}" class="painting-card">
+      <img src="{{ painting.image.url }}" alt="{{ painting.title }}" />
+      <div class="info">
+        <h3>{{ painting.title }}</h3>
+        <span>{{ painting.get_category_display }}{% if painting.price %} - {% if painting.currency == 'USD' %}USD {{ painting.price|floatformat:2 }}{% else %}TZS {{ painting.price|floatformat:0 }}{% endif %}{% endif %}</span>
+      </div>
+    </a>
+    {% empty %}
+    <p>{{ t.no_works }}</p>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <div style="display: flex; gap: 12px; margin-top: 32px; align-items: center">
+    {% if page_obj.has_previous %}
+    <a
+      href="?{% if filter_query_string %}{{ filter_query_string }}&amp;{% endif %}page={{ page_obj.previous_page_number }}"
+      class="btn"
+      >{{ t.previous }}</a
+    >
+    {% endif %}
+    <span style="color: var(--text-muted)"
+      >{{ t.page }} {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span
+    >
+    {% if page_obj.has_next %}
+    <a
+      href="?{% if filter_query_string %}{{ filter_query_string }}&amp;{% endif %}page={{ page_obj.next_page_number }}"
+      class="btn"
+      >{{ t.next }}</a
+    >
+    {% endif %}
+  </div>
+  {% endif %}
 </section>
 {% endblock %}

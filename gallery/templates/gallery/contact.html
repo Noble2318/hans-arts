@@ -1,23 +1,36 @@
 ﻿{% extends 'gallery/base.html' %}
-{% block title %}Contact - Hans Arts{% endblock %}
+{% block title %}{{ t.contact_us }} - Hanslim Art{% endblock %}
 
 {% block content %}
 <section class="section">
-    <h2 class="section-title">Wasiliana Nasi</h2>
+    <h2 class="section-title">{{ t.contact_us }}</h2>
     <div class="detail-layout">
         <div class="detail-info">
-            <form method="post" style="max-width:480px;">
+            <form id="contact-form" method="post" class="contact-form">
                 {% csrf_token %}
+                {{ form.website }}
                 <div class="form-field">{{ form.name }}</div>
                 <div class="form-field">{{ form.email }}</div>
                 <div class="form-field">{{ form.phone }}</div>
+                <div class="form-field">
+                    <label for="{{ form.inquiry_type.id_for_label }}">{{ form.inquiry_type.label }}</label>
+                    {{ form.inquiry_type }}
+                    {{ form.inquiry_type.errors }}
+                </div>
+                <div class="form-field">
+                    <label for="{{ form.order_details.id_for_label }}">{{ form.order_details.label }}</label>
+                    {{ form.order_details }}
+                    <small>{{ form.order_details.help_text|default:t.order_details_help }}</small>
+                    {{ form.order_details.errors }}
+                </div>
                 <div class="form-field">{{ form.message }}</div>
-                <button type="submit" class="btn">Tuma Ujumbe</button>
+                {{ form.non_field_errors }}
+                <button type="submit" class="btn">{{ t.send_message }}</button>
             </form>
         </div>
         <div class="detail-info">
             {% if artist %}
-            <p><strong>Simu/WhatsApp:</strong> {{ artist.whatsapp_number }}</p>
+            <p><strong>{{ t.whatsapp_contact }}:</strong> {{ artist.whatsapp_number }}</p>
             {% if artist.email %}<p><strong>Email:</strong> {{ artist.email }}</p>{% endif %}
             {% endif %}
         </div>
