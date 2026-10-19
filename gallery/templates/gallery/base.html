@@ -40,6 +40,7 @@
     />
     {% endif %}
     <script>
+      document.documentElement.classList.add("js");
       try {
         if (localStorage.getItem("hans-arts-theme") === "light") {
           document.documentElement.dataset.theme = "light";
@@ -48,17 +49,17 @@
     </script>
     <link rel="stylesheet" href="{% static 'gallery/css/style.css' %}" />
   </head>
-  <body>
+  <body id="top">
     <header class="site-header">
       <a
         href="{% url 'home' %}"
         class="site-title"
-        aria-label="Hanslim Art home"
+        aria-label="{{ t.home_label }}"
       >
         <img
           class="site-title__mark"
           src="{% static 'gallery/images/hanslim-art-mark.svg' %}"
-          alt="Hanslim Art emblem"
+          alt="{{ t.logo_alt }}"
           width="56"
           height="56"
         />
@@ -67,35 +68,54 @@
           <span class="site-title__art">Art</span>
         </span>
       </a>
-      <nav class="nav-links">
+
+      <button
+        class="nav-toggle"
+        id="nav-toggle"
+        type="button"
+        aria-label="{{ t.open_menu }}"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        data-label-open="{{ t.open_menu }}"
+        data-label-close="{{ t.close_menu }}"
+      >
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+
+      <nav class="nav-links" id="site-nav">
         <a href="{% url 'home' %}">{{ t.home }}</a>
         <a href="{% url 'gallery_list' %}">{{ t.gallery }}</a>
         <a href="{% url 'about' %}">{{ t.about }}</a>
         <a href="{% url 'contact' %}">{{ t.contact }}</a>
-        <a href="{% url 'contact' %}?inquiry_type=order#contact-form"
+        <a
+          class="nav-cta"
+          href="{% url 'contact' %}?inquiry_type=order#contact-form"
           >{{ t.order_painting }}</a
         >
         <button
           class="theme-toggle"
           id="theme-toggle"
           type="button"
-          aria-label="Switch to light theme"
+          aria-label="{{ t.switch_to_light }}"
           aria-pressed="false"
-          title="Switch to light theme"
+          title="{{ t.switch_to_light }}"
+          data-label-light="{{ t.theme_light }}"
+          data-label-dark="{{ t.theme_dark }}"
+          data-switch-light="{{ t.switch_to_light }}"
+          data-switch-dark="{{ t.switch_to_dark }}"
         >
           <span class="theme-toggle__icon" aria-hidden="true">☼</span>
-          <span class="theme-toggle__label">Light</span>
+          <span class="theme-toggle__label">{{ t.theme_light }}</span>
         </button>
         <select
           class="language-select"
-          aria-label="Select language"
+          aria-label="{{ t.select_language }}"
           onchange="window.location.href='{% url 'set_language' %}?lang='+this.value+'&next={{ request.path }}'"
         >
           {% for code, label in available_languages %}
-          <option
-            value="{{ code }}"
-            {% if code == current_lang %}selected{% endif %}
-          >
+          <option value="{{ code }}" {% if code == current_lang %}selected{% endif %}>
             {{ label }}
           </option>
           {% endfor %}
@@ -114,55 +134,127 @@
     </main>
 
     <footer class="site-footer">
-      <span>&copy; {% now "Y" %} Hanslim Art.</span>
-      {% if artist and artist.instagram_url or artist and artist.tiktok_url or artist and artist.x_url %}
-      <nav class="social-links" aria-label="Social media">
-        {% if artist.instagram_url %}
-        <a
-          class="social-link"
-          href="{{ artist.instagram_url }}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Instagram"
-          title="Instagram"
+      <div
+        class="footer-grid{% if not artist.instagram_url and not artist.tiktok_url and not artist.x_url %} footer-grid--no-social{% endif %}"
+      >
+        <!-- Brand + call to action -->
+        <div class="footer-col footer-brand">
+          <a
+            href="{% url 'home' %}"
+            class="footer-logo"
+            aria-label="{{ t.home_label }}"
+          >
+            <img
+              src="{% static 'gallery/images/hanslim-art-mark.svg' %}"
+              alt=""
+              width="44"
+              height="44"
+              loading="lazy"
+            />
+            <span class="site-title__wordmark" aria-hidden="true">
+              <span class="site-title__name">Hanslim</span>
+              <span class="site-title__art">Art</span>
+            </span>
+          </a>
+          <p class="footer-tagline">
+            {{ t.footer_tagline|default:"Traditional African and wildlife paintings, made by hand." }}
+          </p>
+          <div class="footer-cta">
+            <a
+              class="btn"
+              href="{% url 'contact' %}?inquiry_type=order#contact-form"
+            >
+              {{ t.order_painting }}
+            </a>
+            <a class="btn btn-outline" href="{% url 'gallery_list' %}">
+              {{ t.footer_browse|default:"Browse paintings" }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <nav
+          class="footer-col"
+          aria-label="{{ t.footer_quick_links|default:'Quick links' }}"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
-            <circle cx="18" cy="6" r="1.2" fill="currentColor"/>
-          </svg>
-        </a>
+          <h3>{{ t.footer_quick_links|default:"Quick links" }}</h3>
+          <ul>
+            <li><a href="{% url 'home' %}">{{ t.home|default:"Home" }}</a></li>
+            <li>
+              <a href="{% url 'gallery_list' %}"
+                >{{ t.gallery|default:"Gallery" }}</a
+              >
+            </li>
+            <li>
+              <a href="{% url 'contact' %}"
+                >{{ t.contact_us|default:"Contact" }}</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Contact -->
+        <div class="footer-col">
+          <h3>{{ t.footer_contact|default:"Contact" }}</h3>
+          <ul>
+            {% if artist.email %}
+            <li><a href="mailto:{{ artist.email }}">{{ artist.email }}</a></li>
+            {% endif %} {% if artist.whatsapp_number %}
+            <li>
+              <a
+                href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                >WhatsApp: {{ artist.whatsapp_number }}</a
+              >
+            </li>
+            {% endif %} {% if not artist.email and not artist.whatsapp_number %}
+            <li>
+              <a href="{% url 'contact' %}#contact-form">
+                {{ t.footer_send_message|default:"Send us a message" }}
+              </a>
+            </li>
+            {% endif %}
+            <li class="footer-note">
+              {{ t.footer_reply_time|default:"We usually reply within 24 hours." }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Social (only shown when at least one profile is set) -->
+        {% if artist and artist.instagram_url or artist and artist.tiktok_url or artist and artist.x_url %}
+        <div class="footer-col">
+          <h3>{{ t.footer_follow|default:"Follow" }}</h3>
+          <ul>
+            {% if artist and artist.instagram_url %}
+            <li>
+              <a href="{{ artist.instagram_url }}" target="_blank" rel="noopener noreferrer">Instagram</a>
+            </li>
+            {% endif %} {% if artist and artist.tiktok_url %}
+            <li>
+              <a href="{{ artist.tiktok_url }}" target="_blank" rel="noopener noreferrer">TikTok</a>
+            </li>
+            {% endif %} {% if artist and artist.x_url %}
+            <li>
+              <a href="{{ artist.x_url }}" target="_blank" rel="noopener noreferrer">X</a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
         {% endif %}
-        {% if artist.tiktok_url %}
-        <a
-          class="social-link"
-          href="{{ artist.tiktok_url }}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="TikTok"
-          title="TikTok"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M19.6 8.2a7.2 7.2 0 0 1-4.5-1.6v8.1a6.1 6.1 0 1 1-6.1-6.1c.4 0 .8 0 1.2.1v3.4a2.8 2.8 0 1 0 1.6 2.6V2.5h3.4c.2 2.4 2.1 4.3 4.5 4.5v3.4Z" fill="currentColor"/>
-          </svg>
+      </div>
+
+      <div class="footer-bottom">
+        <p>
+          &copy; {% now "Y" %} Hanslim Art. {{ t.footer_rights|default:"All rights reserved." }}
+        </p>
+        <p class="footer-note">
+          {{ t.footer_artwork_notice|default:"All artworks are the property of the artist and may not be reproduced without permission." }}
+        </p>
+        <a href="#top" class="footer-top">
+          {{ t.back_to_top|default:"Back to top" }} &uarr;
         </a>
-        {% endif %}
-        {% if artist.x_url %}
-        <a
-          class="social-link"
-          href="{{ artist.x_url }}"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="X"
-          title="X"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.3L12 14.6 5.6 22H2.4l7.3-8.4L1.9 2h6.5l4.5 6.8L18.9 2Zm-1.1 18h1.7L7.4 3.9H5.6L17.8 20Z" fill="currentColor"/>
-          </svg>
-        </a>
-        {% endif %}
-      </nav>
-      {% endif %}
+      </div>
     </footer>
 
     {% if artist and artist.whatsapp_number %}
@@ -171,7 +263,7 @@
       href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat with us on WhatsApp"
+      aria-label="{{ t.chat_whatsapp }}"
     >
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path
@@ -184,15 +276,19 @@
     </a>
     {% endif %}
 
-    <dialog class="art-lightbox" id="art-lightbox" aria-label="Artwork preview">
+    <dialog
+      class="art-lightbox"
+      id="art-lightbox"
+      aria-label="{{ t.artwork_preview }}"
+    >
       <div class="lightbox-toolbar">
         <p class="lightbox-caption" id="lightbox-caption"></p>
         <button
           class="icon-button"
           type="button"
           data-lightbox-close
-          aria-label="Close artwork preview"
-          title="Close"
+          aria-label="{{ t.close_preview }}"
+          title="{{ t.close }}"
         >
           &times;
         </button>
@@ -202,15 +298,23 @@
           class="icon-button lightbox-step"
           type="button"
           data-lightbox-previous
-          aria-label="Previous image"
-          title="Previous image"
+          aria-label="{{ t.previous_image }}"
+          title="{{ t.previous_image }}"
         >
           &#8592;
         </button>
         <div class="lightbox-media">
           <img id="lightbox-image" alt="" />
-          <div class="lightbox-video-container" id="lightbox-video-container" hidden>
-            <video id="lightbox-video" controls aria-label="Artwork video"></video>
+          <div
+            class="lightbox-video-container"
+            id="lightbox-video-container"
+            hidden
+          >
+            <video
+              id="lightbox-video"
+              controls
+              aria-label="{{ t.artwork_video }}"
+            ></video>
             <p class="lightbox-video-caption" id="lightbox-video-caption"></p>
           </div>
         </div>
@@ -218,14 +322,14 @@
           class="icon-button lightbox-step"
           type="button"
           data-lightbox-next
-          aria-label="Next image"
-          title="Next image"
+          aria-label="{{ t.next_image }}"
+          title="{{ t.next_image }}"
         >
           &#8594;
         </button>
       </div>
     </dialog>
 
-    <script src="{% static 'gallery/js/site.js' %}?v=2" defer></script>
+    <script src="{% static 'gallery/js/site.js' %}?v=4" defer></script>
   </body>
 </html>

@@ -1,21 +1,19 @@
-﻿{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Page Not Found - Hanslim Art</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@600&family=Work+Sans&display=swap" rel="stylesheet">
-    <style>
-        body { background:#1C1410; color:#EDE4D3; font-family:'Work Sans',sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; text-align:center; }
-        h1 { font-family:'Lora',serif; font-size:2.5rem; }
-        a { color:#C17A3D; text-decoration:none; }
-    </style>
-</head>
-<body>
-    <div>
-        <h1>404 - Page Not Found</h1>
-        <p>The page you're looking for doesn't exist.</p>
-        <a href="/">Back to Home</a>
-    </div>
-</body>
-</html>
+{% extends "gallery/base.html" %}
+
+{% block title %}404 - Page Not Found | Hanslim Art{% endblock %}
+{% block description %}The page you are looking for could not be found. Explore the Hanslim Art gallery or return to the homepage.{% endblock %}
+
+{% block content %}
+<section class="section not-found" aria-labelledby="not-found-title">
+  <p class="not-found__code" aria-hidden="true">404</p>
+  <h1 id="not-found-title">404 - Page Not Found</h1>
+  <p class="not-found__message">
+    This canvas is blank, but your next discovery is just around the corner.
+    The page may have moved or the link may be out of date.
+  </p>
+  <div class="not-found__actions">
+    <a class="btn" href="{% url 'home' %}">Back to home</a>
+    <a class="btn btn-outline" href="{% url 'gallery_list' %}">Explore the gallery</a>
+  </div>
+</section>
+{% endblock %}

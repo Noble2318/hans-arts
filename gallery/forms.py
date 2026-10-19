@@ -74,6 +74,19 @@ class ContactForm(forms.ModelForm):
     def __init__(self, *args, labels, **kwargs):
         super().__init__(*args, **kwargs)
         self.labels = labels
+        placeholders = {
+            'name': 'Your name',
+            'email': 'Email (optional)',
+            'phone': 'Phone number',
+            'message': 'Your message',
+        }
+        for field_name, placeholder in placeholders.items():
+            self.fields[field_name].widget.attrs['placeholder'] = placeholder
+
+        self.fields['name'].label = labels['name']
+        self.fields['email'].label = f"{labels['email']} ({labels['optional']})"
+        self.fields['phone'].label = labels['phone']
+        self.fields['message'].label = labels['message']
         self.fields['inquiry_type'].label = labels['inquiry_type']
         self.fields['inquiry_type'].choices = [
             ('general', labels['general_inquiry']),
@@ -97,10 +110,10 @@ class ContactForm(forms.ModelForm):
             'message',
         ]
         widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Your name'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Email (optional)'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Phone number'}),
-            'message': forms.Textarea(attrs={'placeholder': 'Your message', 'rows': 4}),
+            'name': forms.TextInput(attrs={'autocomplete': 'name'}),
+            'email': forms.EmailInput(attrs={'autocomplete': 'email'}),
+            'phone': forms.TextInput(attrs={'autocomplete': 'tel', 'inputmode': 'tel'}),
+            'message': forms.Textarea(attrs={'rows': 4}),
         }
 
     def clean(self):

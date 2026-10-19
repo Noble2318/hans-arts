@@ -9,10 +9,19 @@ from .forms import ContactForm, GalleryFilterForm
 from .translations import get_text
 
 
+def _lang(request):
+    return request.session.get('language', 'en')
+
+
 def _contact_form_labels(request):
     return {
-        key: get_text(request.session.get('language', 'en'), key)
+        key: get_text(_lang(request), key)
         for key in (
+            'name',
+            'email',
+            'phone',
+            'message',
+            'optional',
             'inquiry_type',
             'general_inquiry',
             'painting_order',
@@ -36,7 +45,7 @@ def home(request):
 
 def gallery_list(request):
     labels = {
-        key: get_text(request.session.get('language', 'en'), key)
+        key: get_text(_lang(request), key)
         for key in (
             'search_placeholder',
             'filter_category',
@@ -116,7 +125,7 @@ def painting_detail(request, pk):
             msg = form.save(commit=False)
             msg.related_painting = painting
             msg.save()
-            messages.success(request, 'Your message has been sent. We will contact you soon!')
+            messages.success(request, get_text(_lang(request), 'success_message'))
             return redirect('painting_detail', pk=pk)
     else:
         form = ContactForm(labels=_contact_form_labels(request))
@@ -140,7 +149,7 @@ def contact(request):
         form = ContactForm(request.POST, labels=_contact_form_labels(request))
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your message has been sent. We will contact you soon!')
+            messages.success(request, get_text(_lang(request), 'success_message'))
             return redirect('contact')
     else:
         inquiry_type = request.GET.get('inquiry_type')

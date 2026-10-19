@@ -195,3 +195,7 @@ MAILERS = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# NOTE: DEBUG, ALLOWED_HOSTS, STATIC_* and MEDIA_* are set once, near the top and
+# in the static files section. Do not re-assign them down here: the settings above
+# (SECRET_KEY, cookies, CSRF origins, email) already depend on their values.

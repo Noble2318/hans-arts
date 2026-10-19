@@ -12,10 +12,19 @@
     }
 
     const isLight = theme === 'light';
+    // Text comes from data attributes set in base.html, so it follows the chosen language.
+    const text = themeButton?.dataset || {};
+    const switchText = isLight
+      ? (text.switchDark || 'Switch to dark theme')
+      : (text.switchLight || 'Switch to light theme');
     themeButton?.setAttribute('aria-pressed', String(isLight));
-    themeButton?.setAttribute('aria-label', `Switch to ${isLight ? 'dark' : 'light'} theme`);
-    themeButton?.setAttribute('title', `Switch to ${isLight ? 'dark' : 'light'} theme`);
-    if (themeLabel) themeLabel.textContent = isLight ? 'Dark' : 'Light';
+    themeButton?.setAttribute('aria-label', switchText);
+    themeButton?.setAttribute('title', switchText);
+    if (themeLabel) {
+      themeLabel.textContent = isLight
+        ? (text.labelDark || 'Dark')
+        : (text.labelLight || 'Light');
+    }
     if (themeIcon) themeIcon.textContent = isLight ? '☾' : '☼';
   };
 
@@ -143,4 +152,43 @@
       observer.observe(card);
     });
   }
+})();
+
+// ---- Mobile navigation menu ----
+(() => {
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('site-nav');
+  if (!toggle || !nav) return;
+
+  const setOpen = (open) => {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    // Labels come from data attributes set in base.html (translated)
+    toggle.setAttribute(
+      'aria-label',
+      open ? (toggle.dataset.labelClose || 'Close menu') : (toggle.dataset.labelOpen || 'Open menu')
+    );
+  };
+
+  toggle.addEventListener('click', () => {
+    setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  // Close after choosing a link
+  nav.querySelectorAll('a').forEach((link) =>
+    link.addEventListener('click', () => setOpen(false))
+  );
+
+  // Close on Escape or when tapping outside the header
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setOpen(false);
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.site-header')) setOpen(false);
+  });
+
+  // Reset when resizing up to desktop
+  window.matchMedia('(min-width: 769px)').addEventListener('change', (event) => {
+    if (event.matches) setOpen(false);
+  });
 })();

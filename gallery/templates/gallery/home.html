@@ -6,6 +6,7 @@ African Art{% endblock %} {% block content %}
   {% endif %}
   <div class="hero-overlay">
     <h1>{{ artist.name|default:"Hanslim Art" }}</h1>
+    <h2 class="hero-inspiration">{{ t.hero_inspiration }}</h2>
     <p>{{ t.hero_subtitle }}</p>
     <div class="hero-actions">
       <a href="{% url 'gallery_list' %}" class="btn">

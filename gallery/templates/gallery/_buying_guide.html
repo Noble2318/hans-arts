@@ -1,0 +1,54 @@
+<section class="buying-guide" aria-labelledby="buying-guide-title">
+  <div class="buying-guide__heading">
+    <h2 id="buying-guide-title">
+      {{ t.how_to_buy|default:"How to buy or commission a painting" }}
+    </h2>
+  </div>
+
+  {% if painting and not painting.is_available %}
+  <p class="buying-guide__notice">
+    {{ t.sold_notice|default:"This painting has been sold." }}
+    <a href="{% url 'contact' %}?inquiry_type=order#contact-form"
+      >{{ t.sold_commission_link|default:"Ask for a similar piece" }}</a
+    >
+  </p>
+  {% endif %}
+
+  <ol class="buying-guide__steps">
+    <li class="buying-guide__step">
+      <span class="buying-guide__step-number" aria-hidden="true">01</span>
+      <div>
+        <h3>{{ t.guide_price_title|default:"Price" }}</h3>
+        {{ t.guide_price_text|default:"Ask for the current price, or for a quote if no price is shown. Mention the painting title so the artist can reply faster." }}
+      </div>
+    </li>
+    <li class="buying-guide__step">
+      <span class="buying-guide__step-number" aria-hidden="true">02</span>
+      <div>
+        <h3>{{ t.guide_payment_title|default:"Payment" }}</h3>
+        {{ t.guide_payment_text|default:"Ask which payment options are available and whether the painting can be reserved before you decide." }}
+      </div>
+    </li>
+    <li class="buying-guide__step">
+      <span class="buying-guide__step-number" aria-hidden="true">03</span>
+      <div>
+        <h3>{{ t.guide_delivery_title|default:"Delivery" }}</h3>
+        {{ t.guide_delivery_text|default:"Tell us your city or country and we will confirm delivery options and cost." }}
+      </div>
+    </li>
+    <li class="buying-guide__step">
+      <span class="buying-guide__step-number" aria-hidden="true">04</span>
+      <div>
+        <h3>{{ t.guide_commission_title|default:"Commission" }}</h3>
+        {{ t.guide_commission_text|default:"Want a painting made for you? Choose the order option in the form and describe the subject, size and timeline." }}
+      </div>
+    </li>
+  </ol>
+
+  <div class="buying-guide__action">
+    <strong>{{ t.guide_commission_title|default:"Commission" }}</strong>
+    <a class="btn" href="{% url 'contact' %}?inquiry_type=order#contact-form">
+      {{ t.order_painting }}
+    </a>
+  </div>
+</section>

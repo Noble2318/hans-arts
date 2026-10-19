@@ -1,60 +1,95 @@
-﻿{% extends 'gallery/base.html' %}
-{% load static %}
-{% block title %}{{ t.contact_us }} - Hanslim Art{% endblock %}
-
-{% block content %}
+﻿{% extends 'gallery/base.html' %} {% load static %} {% block title %}{{ t.contact_us }} - Hanslim Art{% endblock %} {% block content %}
 <section class="section">
-    <h2 class="section-title">{{ t.contact_us }}</h2>
-    <div class="detail-layout">
-        <div class="detail-info">
-            <form id="contact-form" method="post" class="contact-form">
-                {% csrf_token %}
-                {{ form.website }}
-                <div class="form-field">{{ form.name }}</div>
-                <div class="form-field">{{ form.email }}</div>
-                <div class="form-field">{{ form.phone }}</div>
-                <div class="form-field">
-                    <label for="{{ form.inquiry_type.id_for_label }}">{{ form.inquiry_type.label }}</label>
-                    {{ form.inquiry_type }}
-                    {{ form.inquiry_type.errors }}
-                </div>
-                <div class="form-field">
-                    <label for="{{ form.order_details.id_for_label }}">{{ form.order_details.label }}</label>
-                    {{ form.order_details }}
-                    <small>{{ form.order_details.help_text|default:t.order_details_help }}</small>
-                    {{ form.order_details.errors }}
-                </div>
-                <div class="form-field">{{ form.message }}</div>
-                {{ form.non_field_errors }}
-                <button type="submit" class="btn">{{ t.send_message }}</button>
-            </form>
+  <h2 class="section-title">{{ t.contact_us }}</h2>
+
+  <div class="detail-layout">
+    <!-- Contact form -->
+    <div class="detail-info">
+      <form id="contact-form" method="post" class="contact-form">
+        {% csrf_token %} {{ form.website }} {{ form.non_field_errors }}
+
+        <div class="form-field">
+          <label for="{{ form.name.id_for_label }}"
+            >{{ form.name.label }}</label
+          >
+          {{ form.name }} {{ form.name.errors }}
         </div>
-        <div class="detail-info">
-            <div class="contact-brand-lockup" role="img" aria-label="Hanslim Art">
-                <img
-                    src="{% static 'gallery/images/hanslim-art-mark.svg' %}"
-                    alt=""
-                    width="56"
-                    height="56"
-                />
-                <span class="site-title__wordmark" aria-hidden="true">
-                    <span class="site-title__name">Hanslim</span>
-                    <span class="site-title__art">Art</span>
-                </span>
-            </div>
-            {% if artist %}
-            <p><strong>{{ t.whatsapp_contact }}:</strong> {{ artist.whatsapp_number }}</p>
-            {% if artist.whatsapp_number %}
-            <a
-                class="btn contact-whatsapp"
-                href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
-                target="_blank"
-                rel="noopener noreferrer"
-            >{{ t.whatsapp_contact }}</a>
-            {% endif %}
-            {% if artist.email %}<p><strong>Email:</strong> {{ artist.email }}</p>{% endif %}
-            {% endif %}
+
+        <div class="form-field">
+          <label for="{{ form.email.id_for_label }}"
+            >{{ form.email.label }}</label
+          >
+          {{ form.email }} {{ form.email.errors }}
         </div>
+
+        <div class="form-field">
+          <label for="{{ form.phone.id_for_label }}"
+            >{{ form.phone.label }}</label
+          >
+          {{ form.phone }} {{ form.phone.errors }}
+        </div>
+
+        <div class="form-field">
+          <label for="{{ form.inquiry_type.id_for_label }}"
+            >{{ form.inquiry_type.label }}</label
+          >
+          {{ form.inquiry_type }} {{ form.inquiry_type.errors }}
+        </div>
+
+        <div class="form-field">
+          <label for="{{ form.order_details.id_for_label }}"
+            >{{ form.order_details.label }}</label
+          >
+          {{ form.order_details }}
+          <small
+            >{{ form.order_details.help_text|default:t.order_details_help }}</small
+          >
+          {{ form.order_details.errors }}
+        </div>
+
+        <div class="form-field">
+          <label for="{{ form.message.id_for_label }}"
+            >{{ form.message.label }}</label
+          >
+          {{ form.message }} {{ form.message.errors }}
+        </div>
+
+        <button type="submit" class="btn">{{ t.send_message }}</button>
+      </form>
     </div>
+
+    <!-- Brand, WhatsApp, and email -->
+    <div class="detail-info">
+      <div class="contact-brand-lockup" role="img" aria-label="Hanslim Art">
+        <img
+          src="{% static 'gallery/images/hanslim-art-mark.svg' %}"
+          alt=""
+          width="56"
+          height="56"
+        />
+        <span class="site-title__wordmark" aria-hidden="true">
+          <span class="site-title__name">Hanslim</span>
+          <span class="site-title__art">Art</span>
+        </span>
+      </div>
+
+      {% if artist %} {% if artist.whatsapp_number %}
+      <p>
+        <strong>{{ t.whatsapp_contact }}:</strong>
+        {{ artist.whatsapp_number }}
+      </p>
+      <a
+        class="btn contact-whatsapp"
+        href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ t.whatsapp_message|urlencode }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        >{{ t.whatsapp_contact }}</a
+      >
+      {% endif %} {% if artist.email %}
+      <p><strong>Email:</strong> {{ artist.email }}</p>
+      {% endif %} {% endif %}
+    </div>
+  </div>
+  {% include 'gallery/_buying_guide.html' %}
 </section>
 {% endblock %}

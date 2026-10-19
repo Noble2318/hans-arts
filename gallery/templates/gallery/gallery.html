@@ -54,10 +54,22 @@ Art{% endblock %} {% block content %}
   <div class="gallery-grid">
     {% for painting in paintings %}
     <a href="{% url 'painting_detail' painting.pk %}" class="painting-card">
-      <img src="{{ painting.image.url }}" alt="{{ painting.title }}" />
+      <img
+        src="{{ painting.image.url }}"
+        alt="{{ painting.title }}"
+        width="280"
+        height="350"
+        decoding="async"
+        {% if forloop.counter <= 3 %}loading="eager"{% else %}loading="lazy"{% endif %}
+      />
       <div class="info">
         <h3>{{ painting.title }}</h3>
         <span>{{ painting.get_category_display }}{% if painting.price %} - {% if painting.currency == 'USD' %}USD {{ painting.price|floatformat:2 }}{% else %}TZS {{ painting.price|floatformat:0 }}{% endif %}{% endif %}</span>
+        <div>
+          <span class="card-status {% if painting.is_available %}is-available{% else %}is-sold{% endif %}">
+            {% if painting.is_available %}{{ t.available }}{% else %}{{ t.sold }}{% endif %}
+          </span>
+        </div>
       </div>
     </a>
     {% empty %}

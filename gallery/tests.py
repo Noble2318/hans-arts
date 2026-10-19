@@ -64,6 +64,10 @@ class PublicPageTests(TestCase):
 		self.assertContains(response, 'Amina Artist')
 		self.assertContains(response, 'Explore the gallery')
 		self.assertContains(response, 'Meet the artist')
+		self.assertContains(
+			response,
+			'Where every brushstroke brings Africa&#x27;s stories to life.',
+		)
 		self.assertNotContains(response, 'Django does not read a variable tag split')
 		self.assertContains(response, 'https://wa.me/255700123456')
 		self.assertEqual(response.content.decode().count('class="whatsapp-float"'), 1)
@@ -87,6 +91,17 @@ class PublicPageTests(TestCase):
 		self.assertContains(response, 'https://wa.me/255700123456')
 		self.assertContains(response, 'class="whatsapp-float"')
 
+	def test_contact_page_shows_buying_steps_and_order_action(self):
+		response = self.client.get(reverse('contact'))
+
+		self.assertContains(response, 'class="buying-guide__steps"')
+		self.assertContains(response, 'class="buying-guide__step-number" aria-hidden="true">01</span>')
+		self.assertContains(response, 'class="buying-guide__step-number" aria-hidden="true">04</span>')
+		self.assertContains(
+			response,
+			'href="/contact/?inquiry_type=order#contact-form"',
+		)
+
 	def test_footer_shows_configured_social_media_icons(self):
 		ArtistProfile.objects.create(
 			name='Amina Artist',
@@ -98,16 +113,63 @@ class PublicPageTests(TestCase):
 
 		response = self.client.get(reverse('home'))
 
-		self.assertContains(response, '<nav class="social-links" aria-label="Social media">')
+		self.assertContains(response, 'class="footer-grid"')
+		self.assertContains(response, 'class="footer-logo"')
+		self.assertContains(response, 'class="footer-bottom"')
+		self.assertContains(response, 'href="#top"')
+		self.assertContains(response, '<h3>Quick links</h3>')
+		self.assertContains(response, '<h3>Follow</h3>')
 		for label, url in (
 			('Instagram', 'https://www.instagram.com/hanslimart/'),
 			('TikTok', 'https://www.tiktok.com/@hanslimart'),
 			('X', 'https://x.com/hanslimart'),
 		):
 			with self.subTest(platform=label):
-				self.assertContains(response, f'aria-label="{label}"')
 				self.assertContains(response, f'href="{url}"')
-		self.assertEqual(response.content.decode().count('class="social-link"'), 3)
+				self.assertContains(response, f'>{label}</a>')
+		self.assertNotContains(response, 'href="#"')
+
+	def test_footer_shows_contact_details_and_hides_unconfigured_social_links(self):
+		ArtistProfile.objects.create(
+			name='Amina Artist',
+			whatsapp_number='0700123456',
+			email='amina@example.com',
+		)
+
+		response = self.client.get(reverse('home'))
+
+		self.assertContains(response, 'mailto:amina@example.com')
+		self.assertContains(response, 'https://wa.me/255700123456')
+		self.assertContains(response, 'href="#top"')
+		self.assertContains(response, 'Browse paintings')
+		self.assertNotContains(response, '{{')
+		self.assertNotContains(response, 'footer_browse')
+		self.assertNotContains(response, '<h3>Follow</h3>')
+
+	def test_footer_copy_is_available_in_every_supported_language(self):
+		footer_keys = (
+			'footer_tagline',
+			'footer_quick_links',
+			'footer_contact',
+			'footer_reply_time',
+			'footer_follow',
+			'footer_rights',
+			'footer_artwork_notice',
+			'back_to_top',
+		)
+
+		for language, translations in TRANSLATIONS.items():
+			with self.subTest(language=language):
+				self.assertTrue(
+					all(key in translations and translations[key] != key for key in footer_keys)
+				)
+				session = self.client.session
+				session['language'] = language
+				session.save()
+				response = self.client.get(reverse('home'))
+				self.assertEqual(response.status_code, 200)
+				for key in footer_keys:
+					self.assertNotContains(response, key)
 
 	def test_about_page_shows_artist_story_details(self):
 		ArtistProfile.objects.create(
@@ -456,6 +518,11 @@ class PublicPageTests(TestCase):
 
 		self.assertEqual(response.status_code, 404)
 		self.assertContains(response, '404 - Page Not Found', status_code=404)
+		content = response.content.decode()
+		self.assertIn('class="site-header"', content)
+		self.assertIn('This canvas is blank', content)
+		self.assertIn('href="/"', content)
+		self.assertIn('href="/gallery/"', content)
 
 	def test_language_switch_rejects_external_redirect(self):
 		response = self.client.get(

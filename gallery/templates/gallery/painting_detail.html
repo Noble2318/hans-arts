@@ -1,90 +1,162 @@
-﻿{% extends 'gallery/base.html' %}
-{% block title %}{{ painting.title }} - Hanslim Art{% endblock %}
-
-{% block content %}
+﻿{% extends 'gallery/base.html' %} {% block title %}{{ painting.title }} -
+Hanslim Art{% endblock %} {% block content %}
 <section class="section">
-    <div class="detail-layout">
-        <div>
-            <button class="detail-image-button" type="button" data-lightbox-open{% if painting.video %} data-video-src="{{ painting.video.url }}" data-video-caption="{{ t.video_for_artwork }} — {{ painting.title }}"{% endif %} aria-label="Enlarge {{ painting.title }}">
-                <img id="main-image" src="{{ painting.image.url }}" alt="{{ painting.title }}">
-            </button>
-            {% if painting.video %}
-            <video controls style="width:100%; margin-top:16px; border-radius:4px;">
-                <source src="{{ painting.video.url }}" type="video/mp4">
-            </video>
-            <p class="lightbox-video-caption">{{ t.video_for_artwork }}</p>
-            {% endif %}
-            {% if painting.extra_images.all %}
-            <div class="artwork-thumbnails" aria-label="More artwork images">
-                {% for img in painting.extra_images.all %}
-                <button class="thumbnail-button" type="button" data-artwork-thumbnail data-src="{{ img.image.url }}" data-alt="{{ img.caption|default:painting.title }}" aria-label="Show {{ img.caption|default:painting.title }}" aria-pressed="false">
-                    <img src="{{ img.image.url }}" alt="">
-                </button>
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        <div class="detail-info">
-            <h1>{{ painting.title }}</h1>
-            <div class="artwork-meta">
-                <span class="artwork-status {% if painting.is_available %}is-available{% else %}is-sold{% endif %}">
-                    {% if painting.is_available %}{{ t.available }}{% else %}{{ t.sold }}{% endif %}
-                </span>
-                <dl class="meta">
-                    {% if painting.medium %}
-                    <div><dt>{{ t.medium }}</dt><dd>{{ painting.medium }}</dd></div>
-                    {% endif %}
-                    {% if painting.size %}
-                    <div><dt>{{ t.size }}</dt><dd>{{ painting.size }}</dd></div>
-                    {% endif %}
-                    <div><dt>{{ t.category }}</dt><dd>{{ painting.get_category_display }}</dd></div>
-                </dl>
-            </div>
-
-            {% if painting.price %}
-            <p class="price">{% if painting.currency == 'USD' %}USD {{ painting.price|floatformat:2 }}{% else %}TZS {{ painting.price|floatformat:0 }}{% endif %}</p>
-            {% endif %}
-
-            {% if painting.description %}
-            <div class="artwork-description">{{ painting.description|linebreaks }}</div>
-            {% endif %}
-
-            <section class="artwork-contact" aria-labelledby="artwork-contact-title">
-                <h2 id="artwork-contact-title">{{ t.contact_about_painting }}</h2>
-                <div class="hero-actions">
-                    {% if artist.whatsapp_number %}
-                    {% with message=t.whatsapp_message|default:"Hello, I would like to ask about your paintings" %}
-                    <a class="btn" href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ message|add:' '|add:painting.title|urlencode }}" target="_blank" rel="noopener noreferrer">
-                        {{ t.contact_artist|default:"Contact the artist" }}
-                    </a>
-                    {% endwith %}
-                    {% endif %}
-                    <a class="btn btn-outline artwork-form-link" href="#artwork-inquiry">{{ t.send_message }}</a>
-                </div>
-            </section>
-
-            <form id="artwork-inquiry" method="post" class="artwork-inquiry">
-                {% csrf_token %}
-                {{ form.website }}
-                <div class="form-field">{{ form.name }}</div>
-                <div class="form-field">{{ form.email }}</div>
-                <div class="form-field">{{ form.phone }}</div>
-                <div class="form-field">
-                    <label for="{{ form.inquiry_type.id_for_label }}">{{ form.inquiry_type.label }}</label>
-                    {{ form.inquiry_type }}
-                    {{ form.inquiry_type.errors }}
-                </div>
-                <div class="form-field">
-                    <label for="{{ form.order_details.id_for_label }}">{{ form.order_details.label }}</label>
-                    {{ form.order_details }}
-                    <small>{{ form.order_details.help_text|default:t.order_details_help }}</small>
-                    {{ form.order_details.errors }}
-                </div>
-                <div class="form-field">{{ form.message }}</div>
-                {{ form.non_field_errors }}
-                <button type="submit" class="btn">{{ t.send_message }}</button>
-            </form>
-        </div>
+  <div class="detail-layout">
+    <div>
+      <button
+        class="detail-image-button"
+        type="button"
+        data-lightbox-open{% if painting.video %} data-video-src="{{ painting.video.url }}" data-video-caption="{{ t.video_for_artwork }} — {{ painting.title }}"{% endif %}
+        aria-label="Enlarge {{ painting.title }}"
+      >
+        <img
+          id="main-image"
+          src="{{ painting.image.url }}"
+          alt="{{ painting.title }}"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </button>
+      {% if painting.video %}
+      <video
+        controls
+        preload="metadata"
+        style="width: 100%; margin-top: 16px; border-radius: 4px"
+      >
+        <source src="{{ painting.video.url }}" type="video/mp4" />
+      </video>
+      <p class="lightbox-video-caption">{{ t.video_for_artwork }}</p>
+      {% endif %} {% if painting.extra_images.all %}
+      <div class="artwork-thumbnails" aria-label="More artwork images">
+        {% for img in painting.extra_images.all %}
+        <button
+          class="thumbnail-button"
+          type="button"
+          data-artwork-thumbnail
+          data-src="{{ img.image.url }}"
+          data-alt="{{ img.caption|default:painting.title }}"
+          aria-label="Show {{ img.caption|default:painting.title }}"
+          aria-pressed="false"
+        >
+          <img
+            src="{{ img.image.url }}"
+            alt=""
+            width="72"
+            height="72"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
+    <div class="detail-info">
+      <h1>{{ painting.title }}</h1>
+      <div class="artwork-meta">
+        <span
+          class="artwork-status {% if painting.is_available %}is-available{% else %}is-sold{% endif %}"
+        >
+          {% if painting.is_available %}{{ t.available }}{% else %}{{ t.sold }}{% endif %}
+        </span>
+        <dl class="meta">
+          {% if painting.medium %}
+          <div>
+            <dt>{{ t.medium }}</dt>
+            <dd>{{ painting.medium }}</dd>
+          </div>
+          {% endif %} {% if painting.size %}
+          <div>
+            <dt>{{ t.size }}</dt>
+            <dd>{{ painting.size }}</dd>
+          </div>
+          {% endif %}
+          <div>
+            <dt>{{ t.category }}</dt>
+            <dd>{{ painting.get_category_display }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      {% if painting.price %}
+      <p class="price">
+        {% if painting.currency == 'USD' %}USD {{ painting.price|floatformat:2 }}{% else %}TZS {{ painting.price|floatformat:0 }}{% endif %}
+      </p>
+      {% endif %} {% if painting.description %}
+      <div class="artwork-description">
+        {{ painting.description|linebreaks }}
+      </div>
+      {% endif %}
+
+      <section class="artwork-contact" aria-labelledby="artwork-contact-title">
+        <h2 id="artwork-contact-title">{{ t.contact_about_painting }}</h2>
+        <div class="hero-actions">
+          {% if artist.whatsapp_number %}
+          {% with message=t.whatsapp_message|default:"Hello, I would like to ask about your paintings" %}
+          <a
+            class="btn"
+            href="https://wa.me/{{ artist.whatsapp_link_number }}?text={{ message|add:' '|add:painting.title|urlencode }}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ t.contact_artist|default:"Contact the artist" }}
+          </a>
+          {% endwith %} {% endif %}
+          <a class="btn btn-outline artwork-form-link" href="#artwork-inquiry"
+            >{{ t.send_message }}</a
+          >
+        </div>
+      </section>
+
+      {% include 'gallery/_buying_guide.html' %}
+
+      <form id="artwork-inquiry" method="post" class="artwork-inquiry">
+        {% csrf_token %} {{ form.website }}
+        <div class="form-field">
+          <label for="{{ form.name.id_for_label }}"
+            >{{ form.name.label }}</label
+          >
+          {{ form.name }} {{ form.name.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.email.id_for_label }}"
+            >{{ form.email.label }}</label
+          >
+          {{ form.email }} {{ form.email.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.phone.id_for_label }}"
+            >{{ form.phone.label }}</label
+          >
+          {{ form.phone }} {{ form.phone.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.inquiry_type.id_for_label }}"
+            >{{ form.inquiry_type.label }}</label
+          >
+          {{ form.inquiry_type }} {{ form.inquiry_type.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.order_details.id_for_label }}"
+            >{{ form.order_details.label }}</label
+          >
+          {{ form.order_details }}
+          <small
+            >{{ form.order_details.help_text|default:t.order_details_help }}</small
+          >
+          {{ form.order_details.errors }}
+        </div>
+        <div class="form-field">
+          <label for="{{ form.message.id_for_label }}"
+            >{{ form.message.label }}</label
+          >
+          {{ form.message }} {{ form.message.errors }}
+        </div>
+        {{ form.non_field_errors }}
+        <button type="submit" class="btn">{{ t.send_message }}</button>
+      </form>
+    </div>
+  </div>
 </section>
 {% endblock %}

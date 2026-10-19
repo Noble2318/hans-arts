@@ -1,5 +1,7 @@
 ﻿from django.contrib import admin
+from django.contrib.admin.models import LogEntry
 from .models import Painting, ContactMessage, ArtistProfile, PaintingImage
+
 
 class PaintingImageInline(admin.TabularInline):
     model = PaintingImage
@@ -30,13 +32,21 @@ class PaintingAdmin(admin.ModelAdmin):
     )
     inlines = [PaintingImageInline]
 
-    def log_deletions(self, request, queryset):
-        from django.contrib.admin.models import LogEntry
-        from django.contrib.contenttypes.models import ContentType
-
-        object_ids = [str(obj.pk) for obj in queryset]
+    def delete_model(self, request, obj):
+        object_id = str(obj.pk)
+        super().delete_model(request, obj)
         LogEntry.objects.filter(
-            content_type=ContentType.objects.get_for_model(self.model),
+            content_type__app_label=self.model._meta.app_label,
+            content_type__model=self.model._meta.model_name,
+            object_id=object_id,
+        ).delete()
+
+    def delete_queryset(self, request, queryset):
+        object_ids = [str(pk) for pk in queryset.values_list('pk', flat=True)]
+        super().delete_queryset(request, queryset)
+        LogEntry.objects.filter(
+            content_type__app_label=self.model._meta.app_label,
+            content_type__model=self.model._meta.model_name,
             object_id__in=object_ids,
         ).delete()
 
